@@ -15,5 +15,9 @@ def stalog():
 def stulog():
     return render_template('stuLogin.html')
 
+@app.route('/studash')
+def studash():
+    return render_template('snt_dashboard.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

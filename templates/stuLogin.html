@@ -18,7 +18,7 @@
             </h1>
             
             <!-- Login Form -->
-            <form id="loginForm" class="space-y-6">
+            <div id="loginForm" class="space-y-6">
                 <!-- Email Input -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-200 mb-2">
@@ -64,8 +64,8 @@
                 
                 <!-- Login Button -->
                 <button 
-                    type="submit"
                     class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    onclick="sntDashDirect()"
                 >
                     Sign In
                 </button>
@@ -76,7 +76,7 @@
                         Forgot your password?
                     </a>
                 </div>
-            </form>
+            </div>
             
             <!-- Back to Selection -->
             <div class="mt-6 pt-6 border-t border-gray-200">
@@ -89,5 +89,11 @@
             </div>
         </div>
     </div>
+    <script>
+        function sntDashDirect() {
+            console.log("Redirecting...");
+            window.location.href = "/studash";
+        }
+    </script>
 </body>
 </html>
