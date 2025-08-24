@@ -14,15 +14,26 @@
             </h1>
             
             <div class="space-y-4">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105" onclick="stuDirect()">
                     I'm a Student
                 </button>
                 
-                <button class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105">
+                <button class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105" onclick="staffLogin()">
                     I'm Staff
                 </button>
             </div>
         </div>
     </div>
+
+    <script>
+        function stuDirect() {
+            console.log("Redirecting...");
+            window.location.href = "/stulogin";
+        }
+        function staffLogin() {
+            console.log("Redirecting...");
+            window.location.href = "/stafflog";
+        }
+    </script>
 </body>
 </html>
