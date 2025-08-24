@@ -25,15 +25,6 @@
         </div>
     </div>
 
-    <script>
-        function stuDirect() {
-            console.log("Redirecting...");
-            window.location.href = "/stulogin";
-        }
-        function staffLogin() {
-            console.log("Redirecting...");
-            window.location.href = "/stafflog";
-        }
-    </script>
+   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
