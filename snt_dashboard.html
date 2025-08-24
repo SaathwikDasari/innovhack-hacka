@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Request</title>
+    <!-- Tailwind CSS CDN for quick styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Custom background color */
+            background-color: #101828;
+        }
+
+        /* Custom CSS for the toggle switch */
+        /* Hide default HTML checkbox */
+        .toggle-switch input[type="checkbox"] {
+            /* Use sr-only for screen readers only, visually hide it */
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* The track */
+        .toggle-switch .toggle-track {
+            display: block;
+            width: 2.5rem; /* Equivalent to w-10 */
+            height: 1.5rem; /* Equivalent to h-6 */
+            border-radius: 9999px; /* Equivalent to rounded-full */
+            background-color: #4B5563; /* gray-600 for dark mode */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        /* The handle/thumb */
+        .toggle-switch .toggle-handle {
+            position: absolute;
+            top: 0.125rem; /* 2px from top */
+            left: 0.125rem; /* 2px from left */
+            width: 1.25rem; /* Equivalent to w-5 */
+            height: 1.25rem; /* Equivalent to h-5 */
+            border-radius: 9999px; /* Equivalent to rounded-full */
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Checked state */
+        .toggle-switch input[type="checkbox"]:checked + .toggle-track {
+            background-color: #DC2626; /* red-600 */
+        }
+
+        .toggle-switch input[type="checkbox"]:checked + .toggle-track .toggle-handle {
+            transform: translateX(1rem); /* Move handle to the right by 16px */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <!-- Main container with custom background color -->
+    <div class="p-8 rounded-lg shadow-2xl max-w-md w-full" style="background-color: #1e2939;">
+        <h1 class="text-3xl font-bold text-gray-100 mb-6 text-center">Cleaning Request</h1>
+        <p class="text-gray-300 text-center mb-6">Select your cleaning option and place your request!</p>
+
+        <div class="space-y-6">
+            <!-- Standard Cleaning Option with Toggle Switch -->
+            <div class="flex items-center justify-between py-3 px-4 bg-gray-800 rounded-md border border-gray-700">
+                <span class="text-lg font-medium text-gray-200">Standard Cleaning</span>
+                <label for="standardCleaningToggle" class="toggle-switch relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="standardCleaningToggle" name="cleaningOption">
+                    <span class="toggle-track relative">
+                        <span class="toggle-handle"></span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Deep Cleaning Option with Toggle Switch -->
+            <div class="flex items-center justify-between py-3 px-4 bg-gray-800 rounded-md border border-gray-700">
+                <span class="text-lg font-medium text-gray-200">Deep Cleaning</span>
+                <label for="deepCleaningToggle" class="toggle-switch relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="deepCleaningToggle" name="cleaningOption">
+                    <span class="toggle-track relative">
+                        <span class="toggle-handle"></span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Place Request Button -->
+            <button id="placeRequestButton"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 ease-in-out transform hover:scale-105">
+                Place Request
+            </button>
+        </div>
+
+        <!-- Message Box for Confirmation/Errors -->
+        <div id="messageBox" class="mt-6 p-4 rounded-md text-center hidden"></div>
+    </div>
+
+    <script>
+        // Get references to the toggle switches and place request button
+        const standardCleaningToggle = document.getElementById('standardCleaningToggle');
+        const deepCleaningToggle = document.getElementById('deepCleaningToggle');
+        const placeRequestButton = document.getElementById('placeRequestButton');
+        const messageBox = document.getElementById('messageBox');
+
+        // Function to ensure only one toggle is active at a time
+        function handleToggleChange(changedToggle) {
+            messageBox.style.display = 'none'; // Hide any previous messages
+
+            if (changedToggle === standardCleaningToggle && standardCleaningToggle.checked) {
+                deepCleaningToggle.checked = false;
+            } else if (changedToggle === deepCleaningToggle && deepCleaningToggle.checked) {
+                standardCleaningToggle.checked = false;
+            }
+        }
+
+        // Event listeners for toggle switches
+        standardCleaningToggle.addEventListener('change', function() {
+            handleToggleChange(this);
+        });
+        deepCleaningToggle.addEventListener('change', function() {
+            handleToggleChange(this);
+        });
+
+        // Event listener for Place Request Button
+        placeRequestButton.addEventListener('click', function() {
+            // Collect the state of the toggle switches
+            const requestData = {
+                selectedOption: standardCleaningToggle.checked ? 'Standard Cleaning' : (deepCleaningToggle.checked ? 'Deep Cleaning' : 'None'),
+                timestamp: new Date().toISOString() // Add a timestamp for the request
+            };
+
+            // Check if at least one option is selected
+            if (!standardCleaningToggle.checked && !deepCleaningToggle.checked) {
+                messageBox.textContent = '⚠️ Please select one cleaning option to place a request.';
+                messageBox.className = 'mt-6 p-4 rounded-md text-center bg-yellow-200 text-yellow-800';
+                messageBox.style.display = 'block';
+                return; // Stop further execution if no option is selected
+            }
+
+            // Simulate API call or data processing
+            console.log('Cleaning request placed with options:', requestData);
+
+            // Display success message
+            messageBox.textContent = `🎉 Your request for ${requestData.selectedOption} has been placed!`;
+            messageBox.className = 'mt-6 p-4 rounded-md text-center bg-green-200 text-green-800';
+            messageBox.style.display = 'block';
+
+            // Optional: Reset toggle switches after placing request
+            standardCleaningToggle.checked = false;
+            deepCleaningToggle.checked = false;
+        });
+    </script>
+</body>
+</html>
