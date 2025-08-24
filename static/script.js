@@ -53,9 +53,12 @@ placeRequestButton.addEventListener('click', function() {
 });
 
 function sntDashDirect() {
-    if (document.getElementById("email"))
-    console.log("Redirecting...");
-    window.location.href = "/studash";
+    if (email.value.includes('@vitstudent.ac.in')){
+        console.log("Redirecting...");
+        window.location.href = "/studash";
+    } else {
+        alert("Please enter a valid college email id!")
+    }
 }
 
 function goBack() {
