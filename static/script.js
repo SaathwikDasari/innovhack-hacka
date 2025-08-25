@@ -75,3 +75,7 @@ function staDashGo() {
     console.log("Redirecting...");
     window.location.href = '/stadash'
 }
+function staDashGo2() {
+    console.log("Redirecting...");
+    window.location.href = '/staffdash2'
+}
