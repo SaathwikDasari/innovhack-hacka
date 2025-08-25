@@ -23,6 +23,10 @@ def studash():
 def stadash():
     return render_template('staffdash.html')
 
+@app.route('/staffdash2')
+def stdash2():
+    return render_template('staffdash2.html')
+
 @app.route('/api/students')
 def get_students():
     conn = sqlite3.connect('DORM_FRESH')
