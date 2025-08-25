@@ -19,6 +19,8 @@ try:
     # for row in records:
     #     print(row)
 
+    print(cur.execute("SELECT * FROM Students"))
+
 except psycopg2.Error as e:
     print(f"Error: {e}")
 

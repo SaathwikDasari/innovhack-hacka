@@ -1,3 +1,5 @@
+var email = undefined;
+
 function stuDirect() {
     console.log("Redirecting...");
     window.location.href = "/stulogin";
@@ -53,8 +55,11 @@ placeRequestButton.addEventListener('click', function() {
 });
 
 function sntDashDirect() {
-    if (email.value.includes('@vitstudent.ac.in')){
+    emailInput = document.getElementById('email')
+    if (emailInput.value.includes('@vitstudent.ac.in')){
+        email = emailInput.value;
         console.log("Redirecting...");
+        console.log(email)
         window.location.href = "/studash";
     } else {
         alert("Please enter a valid college email id!")
@@ -64,4 +69,9 @@ function sntDashDirect() {
 function goBack() {
     console.log("Going Back....");
     window.location.href = '/'
+}
+
+function staDashGo() {
+    console.log("Redirecting...");
+    window.location.href = '/stadash'
 }

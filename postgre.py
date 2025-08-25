@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 conn = sqlite3.connect('DORM_FRESH')
 
@@ -134,18 +135,99 @@ cur = conn.cursor()
 
 # conn.commit()
 
-cur.execute("SELECT * FROM Students")
+# cur.execute("""CREATE TABLE IF NOT EXISTS cleaning_rooms (
+#             room_number TEXT NOT NULL,
+#             student_name TEXT NOT NULL,
+#             request_time TEXT NOT NULL
+#         );""")
+
+# cur.execute("""INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ("420", "SAATHWIK DASARI", "10:00AM" );""")
+
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('420', 'SAATHWIK DASARI', '10:00AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('101', 'Student1', '10:05AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('102', 'Student4', '10:10AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('103', 'Student7', '10:15AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('104', 'Student10', '10:20AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('105', 'Student13', '10:25AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('106', 'Student16', '10:30AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('107', 'Student19', '10:35AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('108', 'Student22', '10:40AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('109', 'Student25', '10:45AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('110', 'Student28', '10:50AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('111', 'Student31', '10:55AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('112', 'Student34', '11:00AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('113', 'Student37', '11:05AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('114', 'Student40', '11:10AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('115', 'Student43', '11:15AM');")
+cur.execute("INSERT INTO cleaning_rooms (room_number, student_name, request_time) VALUES ('116', 'Student46', '11:20AM');")
+
+cur.execute("SELECT * FROM cleaning_rooms")
 
 rows = cur.fetchall()
 for r in rows:
     print(r)
 
-cur.execute("SELECT * FROM Staff")
-rows = cur.fetchall()
-for r in rows:
-    print(r)
+def get_cleaning_rooms(db_connection):
+    """
+    Fetches all student data from the 'Students' table and converts it into
+    a JavaScript-formatted string of an array of dictionaries.
 
-cur.execute("SELECT * FROM Rooms")
-rows = cur.fetchall()
-for r in rows:
-    print(r)
+    Args:
+        db_connection: A database connection object.
+
+    Returns:
+        A string containing a JavaScript array of objects.
+    """
+    try:
+        cur = db_connection.cursor()
+        
+        # SQL query to select all data from the Students table.
+        # This assumes your table is named 'Students'.
+        select_sql = "SELECT * FROM cleaning_rooms;"
+        
+        # Execute the query
+        cur.execute(select_sql)
+        
+        # Fetch all results from the query
+        rows = cur.fetchall()
+        
+        # Get the column names from the cursor description
+        columns = [column[0] for column in cur.description]
+        
+        # Map the column names to the dictionary keys you specified.
+        # It's good practice to ensure the order matches the SELECT statement.
+        js_keys = ['student_id', 'student_name', 'email', 'room_no']
+        
+        # Convert the fetched data into a list of dictionaries
+        student_data = []
+        for row in rows:
+            student_dict = {}
+            for i, value in enumerate(row):
+                student_dict[js_keys[i]] = value
+            student_data.append(student_dict)
+            
+        # Convert the list of dictionaries to a JSON string.
+        # This is the easiest way to represent it as a JavaScript array.
+        js_data = json.dumps(student_data, indent=4)
+
+        # Return the JavaScript-formatted string with the variable declaration.
+        return f"const sampleData = {js_data};"
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return "An error occurred during data retrieval."
+    finally:
+        if 'cur' in locals():
+            cur.close()
+
+print(get_cleaning_rooms(conn))
+
+# cur.execute("SELECT * FROM Staff")
+# rows = cur.fetchall()
+# for r in rows:
+#     print(r)
+
+# cur.execute("SELECT * FROM Rooms")
+# rows = cur.fetchall()
+# for r in rows:
+#     print(r)
