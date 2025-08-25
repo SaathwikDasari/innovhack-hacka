@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Requests - Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Custom scrollbar for a better dark mode aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e2939;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-[#1e2939] text-gray-300 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="bg-slate-800/60 backdrop-blur-lg rounded-2xl shadow-xl p-8 mb-8 border border-slate-700">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-100 mb-3">
+                    <i class="fas fa-broom mr-3 text-blue-500"></i>
+                    Cleaning Requests Dashboard
+                </h1>
+                <p class="text-gray-400 text-lg">Manage room cleaning requests in priority order</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-slate-800 rounded-xl p-6 text-white shadow-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium">Total Requests</p>
+                        <p class="text-3xl font-bold" id="totalRequests">0</p>
+                    </div>
+                    <div class="bg-blue-500/20 p-3 rounded-lg">
+                        <i class="fas fa-list-ul text-2xl text-blue-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-slate-800 rounded-xl p-6 text-white shadow-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium">High Priority</p>
+                        <p class="text-3xl font-bold" id="highPriorityRequests">0</p>
+                    </div>
+                    <div class="bg-orange-500/20 p-3 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-2xl text-orange-400"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-slate-800 rounded-xl p-6 text-white shadow-lg border border-slate-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm font-medium">Completed Today</p>
+                        <p class="text-3xl font-bold" id="completedToday">0</p>
+                    </div>
+                    <div class="bg-green-500/20 p-3 rounded-lg">
+                        <i class="fas fa-check-circle text-2xl text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-4 mb-6">
+            <button onclick="refreshRequests()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl">
+                <i class="fas fa-sync-alt"></i>
+                Refresh List
+            </button>
+            
+            <button onclick="clearCompleted()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl">
+                <i class="fas fa-trash-alt"></i>
+                Clear All Completed
+            </button>
+        </div>
+
+        <!-- Cleaning Requests Table -->
+        <div class="bg-slate-800/60 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-700 overflow-hidden">
+            <div class="bg-slate-900/70 text-white p-6">
+                <h2 class="text-2xl font-bold flex items-center gap-3">
+                    <i class="fas fa-clipboard-list"></i>
+                    Pending Cleaning Requests
+                </h2>
+                <p class="text-gray-400 mt-2">Ordered by request time (oldest first)</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-900">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Room Number</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Room Type</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Request Time</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Issue Type</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody" class="divide-y divide-slate-700">
+                        <!-- Dynamic content will be inserted here. Example row: -->
+                        <!-- 
+                        <tr class="hover:bg-slate-800">
+                            <td class="px-6 py-4 whitespace-nowrap">101</td>
+                            <td class="px-6 py-4 whitespace-nowrap">John Doe</td>
+                            <td class="px-6 py-4 whitespace-nowrap">King Suite</td>
+                            <td class="px-6 py-4 whitespace-nowrap">10:30 AM</td>
+                            <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500/20 text-red-400">Spill Cleanup</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500/20 text-yellow-400">Pending</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap"><button class="text-green-400 hover:text-green-300">Mark as Complete</button></td>
+                        </tr>
+                        -->
+                    </tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-16">
+                    <i class="fas fa-clipboard-check text-6xl text-slate-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-400 mb-2">No Pending Requests</h3>
+                    <p class="text-gray-500">All rooms are clean! Great job team.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="mt-8 bg-slate-800/60 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-700">
+            <div class="bg-slate-900/70 text-white p-6 rounded-t-2xl">
+                <h3 class="text-xl font-bold flex items-center gap-3">
+                    <i class="fas fa-history"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="p-6">
+                <div id="recentActivity" class="space-y-3">
+                    <!-- Recent activity items will be added here -->
+                    <p class="text-gray-500 italic">No recent activity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 rounded-2xl p-8 max-w-md mx-4 transform transition-all shadow-2xl border border-slate-700">
+            <div class="text-center">
+                <div class="bg-green-500/20 rounded-full p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-check text-green-400 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-100 mb-2">Request Completed!</h3>
+                <p class="text-gray-400 mb-6">The cleaning request has been marked as complete.</p>
+                <button onclick="closeModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        // Mock data for demonstration
+        let mockRequests = [
+            { id: 1, room: '304', name: 'Manan Shah', type: '3 non AC', time: '08:15 AM', issue: 'Standard Cleaning', status: 'Pending' },
+            { id: 2, room: '501', name: 'Jhanvi Vashisth', type: '4 AC', time: '09:02 AM', issue: 'Deep Cleaning', status: 'Pending', priority: 'high' },
+            { id: 3, room: '212', name: 'Saathwik Dasari', type: '6 AC Deluxe', time: '09:30 AM', issue: 'Standard Cleaning', status: 'Pending' },
+            { id: 4, room: '308', name: 'Krishna Nair', type: '3 AC Deluxe', time: '10:05 AM', issue: 'Standard Cleaning', status: 'Pending' },
+            { id: 5, room: '108', name: 'Niharika Pathak', type: '4 AC Apartment', time: '10:30 AM', issue: 'Standard Cleaning', status: 'Pending' }
+        ];
+
+        const tableBody = document.getElementById('requestsTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const totalRequestsEl = document.getElementById('totalRequests');
+        const highPriorityRequestsEl = document.getElementById('highPriorityRequests');
+        const completedTodayEl = document.getElementById('completedToday');
+        const recentActivityEl = document.getElementById('recentActivity');
+        const successModal = document.getElementById('successModal');
+
+        function renderTable() {
+            tableBody.innerHTML = '';
+            const pendingRequests = mockRequests.filter(r => r.status === 'Pending');
+
+            if (pendingRequests.length === 0) {
+                emptyState.style.display = 'block';
+                tableBody.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                tableBody.style.display = '';
+                pendingRequests.forEach(request => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-slate-800 transition-colors duration-150';
+                    
+                    let issueBadge = `<span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-500/20 text-blue-300">${request.issue}</span>`;
+                    if (request.priority === 'high') {
+                         issueBadge = `<span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-500/20 text-orange-300">${request.issue}</span>`;
+                    }
+
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap font-medium text-white">${request.room}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${request.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${request.type}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${request.time}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${issueBadge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500/20 text-yellow-300">${request.status}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button onclick="completeRequest(${request.id})" class="text-green-400 hover:text-green-300 transition-colors">Mark Complete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            updateStats();
+        }
+
+        function updateStats() {
+            const pending = mockRequests.filter(r => r.status === 'Pending');
+            const highPriority = pending.filter(r => r.priority === 'high');
+            const completed = mockRequests.filter(r => r.status === 'Completed');
+
+            totalRequestsEl.textContent = pending.length;
+            highPriorityRequestsEl.textContent = highPriority.length;
+            completedTodayEl.textContent = completed.length;
+        }
+        
+        function addActivity(message) {
+            const firstChild = recentActivityEl.querySelector('p.italic');
+            if (firstChild) {
+                recentActivityEl.innerHTML = '';
+            }
+            const activityItem = document.createElement('div');
+            activityItem.className = 'flex items-center gap-3 text-sm';
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            activityItem.innerHTML = `
+                <span class="text-gray-500">${time}</span>
+                <p class="text-gray-300">${message}</p>
+            `;
+            recentActivityEl.prepend(activityItem);
+        }
+
+        function completeRequest(id) {
+            const request = mockRequests.find(r => r.id === id);
+            if (request) {
+                request.status = 'Completed';
+                addActivity(`Room <span class="font-bold text-white">${request.room}</span> cleaning completed.`);
+                renderTable();
+                showModal();
+            }
+        }
+
+        function refreshRequests() {
+            // In a real app, this would fetch new data. Here we just re-render.
+            addActivity('Request list refreshed.');
+            renderTable();
+        }
+
+        function clearCompleted() {
+             const completedCount = mockRequests.filter(r => r.status === 'Completed').length;
+             if (completedCount > 0) {
+                mockRequests = mockRequests.filter(r => r.status !== 'Completed');
+                addActivity(`<span class="font-bold text-white">${completedCount}</span> completed request(s) cleared.`);
+                renderTable();
+             }
+        }
+        
+        function showModal() {
+            successModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            successModal.classList.add('hidden');
+        }
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', renderTable);
+    </script>
+</body>
+</html>
